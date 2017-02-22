@@ -30,7 +30,33 @@ $(function() {
       var $li = $('#listItem-' + data.id);
       $li.replaceWith(liHtml);
       $('.toggle').change(toggleTask);
+      showClearCompleted();
     });
+  }
+
+  // find completed list items and push their ids and their task ids to an array
+  function getCompletedLis() {
+    var completedLis = [];
+    $('.todo-list li').each(function(i){
+      if ( this.getAttribute('class').match(/completed/) ) {
+        completedLis.push(
+          {
+            liId: this.getAttribute('id'),
+            taskId: Number(this.firstChild.firstChild.getAttribute('data-id'))
+          }
+        );
+      }
+    });
+    return completedLis;
+  }
+
+  // hides clear-completed button if there are completed tasks, and vice versa
+  function showClearCompleted() {
+    if (getCompletedLis().length === 0) {
+      $('.clear-completed').hide();
+    } else {
+      $('.clear-completed').show();
+    }
   }
 
   $.get("/tasks").success(function(data) {
@@ -38,13 +64,14 @@ $(function() {
     data.forEach(function(task, i) {
       htmlString += taskHtml(task);
     });
-    var ulTodos = $('.todo-list')
-    ulTodos.html(htmlString)
+    var ulTodos = $('.todo-list');
+    ulTodos.html(htmlString);
 
     $('.toggle').change(toggleTask);
+    showClearCompleted();
   });
 
-  $('#new-form').submit(function(event){
+  $('#new-form').submit(function(event) {
     event.preventDefault();
     var textbox = $('.new-todo');
     var payload = {
@@ -58,7 +85,20 @@ $(function() {
       ulTodos.append(htmlString);
       $('.toggle').change(toggleTask);
       $('.new-todo').val('');
+      showClearCompleted();
     });
+  });
+
+  $('.clear-completed').click(function() {
+    var completedLis = getCompletedLis();
+    completedLis.forEach(function(el, i) {
+      $.ajax({
+        type: "DELETE",
+        url: "/tasks/" + el.taskId
+      });
+      $('#' + el.liId).remove();
+    });
+    showClearCompleted();
   });
 
 });

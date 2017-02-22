@@ -35,4 +35,14 @@ RSpec.describe TasksController, type: :controller do
       expect(task.done).to eq(true)
     end
   end
+
+  describe "tasks#destroy" do
+    it "should allow tasks to be deleted" do
+      task = FactoryGirl.create(:task, title: 'Foo')
+      delete :destroy, params: { id: task.id }
+
+      expect(response).to have_http_status(:success)
+      expect(Task.find_by(title: 'Foo')).to be_nil
+    end
+  end
 end
