@@ -1,6 +1,6 @@
 # Todoster
 
-To-do list app utilizing a fluid user interface through Javascript and AJAX, allowing users to rapidly add dynamic content.
+To-do list app utilizing a fluid user interface through Javascript and AJAX, allowing users to rapidly add dynamic content. A working version is hosted on [Heroku](https://todoster-miljinx.herokuapp.com/).
 
 ![home page](screenshots/screenshot1.png 'home page')
 
